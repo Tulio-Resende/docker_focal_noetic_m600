@@ -1,12 +1,12 @@
 In the docker_test (it may change) folder, use the following command to build the image
 
 ```
-docker build -t <image_name> .
+docker build -t ariel-image .
 ```
 When the process is finished, Its time to run the docker (improve in the device group permission is needed!)
 
 ```
-docker run -it --user ros --network=host --ipc=host -v ~/volumes:/container_volume -v /tmp/.X11-unix:/tmp/.X11-unix:rw --env=DISPLAY -v /dev:/dev --device-cgroup-rule='c *:* rmw' my_image
+docker run -it --name ariel --user ros --network=host --ipc=host -v ~/volumes:/container_volume -v /tmp/.X11-unix:/tmp/.X11-unix:rw -v ~/.ssh:/home/ros/.ssh --env=DISPLAY -v /dev:/dev --device-cgroup-rule='c *:* rmw' ariel-image
 ```
 Now, we have acess to the terminal.
 
@@ -38,6 +38,12 @@ So, openning the launch file
 
 ```
 nano ~/dji_ws/src/Onboard-SDK-ROS/dji_sdk/launch/sdk.launch
+```
+
+or if you prefer vim 
+
+```
+vim ~/dji_ws/src/Onboard-SDK-ROS/dji_sdk/launch/sdk.launch
 ```
 
 Next, delete the current data in the file, and copy the following information inside this and change the serial_name value to the serial port seen before ("/dev/ttyUSB0"):
@@ -75,7 +81,6 @@ ERRORLOG/1 @ getValue, L315: Topic 0x26 value memory not initialized, return def
 log file: /home/ros/.ros/log/408684d6-7dff-11f0-a9e2-e8b0c596502d/dji_sdk-2*.log
 ```
 
-
 So, if you don't use RTK, make sure to comment the line 259~309 in the following file
 
 ```
@@ -95,3 +100,14 @@ Now, you can launch sdk.launch
 roslaunch dji_sdk sdk.launch 
 ```
 
+To exit the container use
+
+``` 
+exit
+```
+
+To return to the previous created container
+
+``` 
+docker container start -i ariel
+```
