@@ -111,3 +111,8 @@ To return to the previous created container
 ``` 
 docker container start -i ariel
 ```
+To open other terminals of this docker
+
+``` 
+docker exec -it ariel /bin/bash
+```
