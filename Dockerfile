@@ -77,6 +77,27 @@ RUN chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/dji_ws /home/${USERNAME}/
 
 USER ${USERNAME}
 
+# Agent forwarding during docker build https://stackoverflow.com/questions/43418188/ssh-agent-forwarding-during-docker-build
+
+ENV DOCKER_BUILDKIT=1
+RUN sudo apt-get install -y openssh-client
+ENV GIT_SSH_COMMAND="ssh -v"
+
+RUN mkdir -p -m 0600 ~/.ssh/ && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+# Perception
+WORKDIR /home/${USERNAME}
+RUN mkdir -p /home/${USERNAME}/ARIEL/src
+RUN --mount=type=ssh git clone --branch add-static-tests git@gitlab.com:gscar-coppe-ufrj/ariel/ros/main-ariel/accessories-nodes/ariel_launch.git
+RUN --mount=type=ssh git clone --branch landpad-pose-extraction git@gitlab.com:gscar-coppe-ufrj/ariel/ros/main-ariel/accessories-nodes/aruco_collector.git
+RUN --mount=type=ssh git clone --branch opencv4 git@gitlab.com:gscar-coppe-ufrj/ariel/ros/main-ariel/accessories-nodes/my_flavor_of_aruco.git
+RUN --mount=type=ssh git clone --branch test_version git@gitlab.com:gscar-coppe-ufrj/ariel/ros/main-ariel/accessories-nodes/drone_tf.git
+
+RUN apt update
+RUN apt upgrade -y
+RUN apt install -y build-essential
+RUN apt install -y python3-opencv
+
 COPY entrypoint.sh /entrypoint.sh
 COPY bashrc /home/${USERNAME}/.bashrc
 
